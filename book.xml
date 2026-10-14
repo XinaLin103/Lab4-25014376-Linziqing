@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogue>
+    <book id="b001">
+        <title>The Good Apple</title>
+        <author>Lindy</author>
+        <price>99.99</price>
+   </book>
+   <book id="b002">
+        <title>The Good Banana</title>
+        <author>Marwy</author>
+        <price>89.99</price>
+   </book>
+   <book id="b003">
+        <title>The Good Cherry</title>
+        <author>Linda</author>
+        <price>79.99</price>
+   </book>
+</catalogue>

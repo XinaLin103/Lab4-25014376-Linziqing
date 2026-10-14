@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>XML book catalogue</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 2rem; }
+            .book {
+                border: 1px solid #e8d7ce;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>book catalogue</h1>
+        <div id="book-list">loaading...</div>
+        <script>
+            async function loadbooks(){
+                const container= document.getElementById('book-list');
+                try{
+                    const response = await fetch('book.xml');
+                      if (!response.ok) {
+                        throw new Error('Fetch error: ' + response.status);
+                    }
+                    const xmlText = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                    const parserError = xmlDoc.querySelector('parsererror');
+                    if (parserError) {
+                        throw new Error('XML Format error: ' + parserError.textContent);
+                    }
+                    const books = xmlDoc.querySelectorAll('book');
+                    container.innerHTML = '';
+                     books.forEach(book => {
+                        const id = book.getAttribute('id');
+                        const title = book.querySelector('title')?.textContent || '无标题';
+                        const author = book.querySelector('author')?.textContent || '未知作者';
+                        const price = book.querySelector('price')?.textContent || '无价格';
+
+                        const card = document.createElement('div');
+                        card.className = 'book';
+                        card.innerHTML = `
+                            <h2>${escapeHtml(title)}</h2>
+                            <p><strong>ID：</strong>${escapeHtml(id)}</p>
+                            <p><strong>作者：</strong>${escapeHtml(author)}</p>
+                            <p><strong>价格：</strong>${escapeHtml(price)}</p>
+                        `;
+                        container.appendChild(card);
+                        });
+                    } catch (err) {
+                        container.textContent = '加载失败：' + err.message;
+                    }
+                }
+                function escapeHtml(value) {
+                    return String(value).replace(/[&<>"']/g, function (s) {
+                        return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                        }[s];
+                    });
+                }
+            loadbooks();
+        </script>
+    </body>
+</html>
+

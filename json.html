@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    .profile {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Profiles</h1>
+  <div id="profiles">Loading...</div>
+
+  <script>
+    async function loadProfiles() {
+      const container = document.getElementById('profiles');
+
+      try {
+        const response = await fetch('userProfiles.json');
+        if (!response.ok) {
+          throw new Error('Fetch error: ' + response.status);
+        }
+
+        const data = await response.json();
+        container.innerHTML = '';
+
+        data.users.forEach(user => {
+          const div = document.createElement('div');
+          div.className = 'profile';
+
+          div.innerHTML = `
+            <h2>${escapeHtml(user.firstName)} ${escapeHtml(user.lastName)}</h2>
+            <p><strong>Email:</strong>${escapeHtml(user.email)}</p>
+            <p><strong>Birth Date:</strong>${escapeHtml(user.dateOfBirth)}</p>
+            <p><strong>Address:</strong>
+              ${escapeHtml(user.address.street)},
+              ${escapeHtml(user.address.city)},
+              ${escapeHtml(user.address.state)}
+              ${escapeHtml(user.address.zipCode)}
+            </p>
+            <p><strong>Theme:</strong>${escapeHtml(user.preferences.theme)}</p>
+            <p><strong>Language:</strong>${escapeHtml(user.preferences.language)}</p>
+            <p><strong>Notifications:</strong>${user.preferences.notifications ? 'Enabled' : 'Disabled'}</p>
+            <p><strong>Subscription:</strong>${user.preferences.subscription ? 'Subscribed' : 'Not Subscribed'}</p>
+          `;
+
+          container.appendChild(div);
+        });
+      } catch (err) {
+        container.textContent = 'Loading failed: ' + err.message;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (s) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[s];
+      });
+    }
+
+    loadProfiles();
+  </script>
+</body>
+</html>
